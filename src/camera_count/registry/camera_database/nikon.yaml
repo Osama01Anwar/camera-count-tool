@@ -1,6 +1,9 @@
 # Nikon
 #
-# Models are added only with a citation for the exact-count method.
+# Nikon records its actuation counters in the main MakerNotes table rather than
+# per model, so these entries use the manufacturer-wide "*" model. That is a
+# claim about the tag table, not about any particular body: if a camera does not
+# write the field, the counter is reported as NOT AVAILABLE.
 manufacturer: Nikon
 manufacturer_aliases:
   - NIKON
@@ -12,4 +15,47 @@ usb_vendor_ids:
       kind: url
       reference: http://www.linux-usb.org/usb.ids
       note: 'usb.ids vendor entry: "04b0  Nikon Corp." (retrieved 2026-09-16)'
-models: []
+models:
+  - model: "*"
+    exact_count_available: true
+    methods:
+      - type: makernote_field
+        identifier: Nikon:ShutterCount
+        count_type: total_releases
+        verification_status: documented
+        invalid_values:
+          - 4294965247
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Nikon.pm:2975
+          note: >-
+            Main Nikon MakerNotes table, tag 0x00a7 ShutterCount, int32u,
+            described in the source as the number of shots taken by the camera so
+            far. Its notes state that it includes both mechanical and electronic
+            shutter activations on models with that feature, which is why it is
+            recorded here as total_releases rather than as a mechanical count.
+            The same entry maps the value 4294965247 to "n/a", so that value is
+            listed as invalid.
+        notes: >-
+          Per-model Nikon ShotInfo tables define a tag of the same name for
+          older bodies. ExifTool decodes whichever applies and reports one
+          Nikon:ShutterCount, so this single identifier covers both paths.
+      - type: makernote_field
+        identifier: Nikon:MechanicalShutterCount
+        count_type: mechanical
+        verification_status: documented
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Nikon.pm:2142
+          note: >-
+            Main Nikon MakerNotes table, tag 0x0037 MechanicalShutterCount,
+            int32u. Written by bodies that count mechanical actuations separately
+            from total releases.
+    limitations:
+      - >-
+        Both counters are read from an original file's MakerNotes. A file that
+        has been edited, exported or re-saved is refused before any field is
+        read.
+      - >-
+        A count from a file is the count at the moment that frame was taken, not
+        the camera's count today.

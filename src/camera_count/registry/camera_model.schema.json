@@ -114,6 +114,12 @@
             }
           }
         },
+        "invalid_values": {
+          "type": "array",
+          "description": "Values the manufacturer or the cited source documents as 'not available' rather than as a count. Reading one of these reports the counter as unavailable.",
+          "items": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+          "uniqueItems": true
+        },
         "notes": { "type": "string" }
       }
     },
@@ -125,7 +131,7 @@
         "model": {
           "type": "string",
           "minLength": 1,
-          "description": "Model string exactly as the camera reports it."
+          "description": "Model string exactly as the camera reports it, or \"*\" for a method documented in a manufacturer's main MakerNotes table rather than per model. A wildcard entry is used only when no exact model entry matches, and still reports unavailable when the field is absent from the file."
         },
         "aliases": {
           "type": "array",

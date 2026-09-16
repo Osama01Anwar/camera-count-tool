@@ -159,6 +159,15 @@ class RegistryAdapter:
             )
 
         value, reference = answer
+        if method.is_invalid_value(value):
+            return Unavailable(
+                message=CAMERA_DID_NOT_PROVIDE_SHUTTER_COUNT,
+                reason=(
+                    f"The camera returned {value}, which the documented source records "
+                    "as 'not available' rather than as a count."
+                ),
+                count_type=method.count_type,
+            )
         return ShutterReading.from_source(
             value=value, source_id=method.source_id, transaction_ref=reference
         )

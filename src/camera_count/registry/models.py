@@ -20,6 +20,9 @@ from camera_count.core.sources import Citation, SourceRecord
 
 _NORMALIZE_RE = re.compile(r"[\s_\-]+")
 
+#: Model value marking a manufacturer-wide entry.
+WILDCARD_MODEL = "*"
+
 
 def normalize_name(text: str) -> str:
     """Fold a manufacturer or model string for comparison.
@@ -59,7 +62,12 @@ class RegisteredMethod:
     citation: Citation
     firmware_range: str | None = None
     value_spec: ValueSpec | None = None
+    invalid_values: tuple[int, ...] = ()
     notes: str | None = None
+
+    def is_invalid_value(self, value: int) -> bool:
+        """True when the source documents this value as 'not available'."""
+        return value in self.invalid_values
 
     @property
     def is_camera_method(self) -> bool:
@@ -104,7 +112,19 @@ class CameraModel:
     limitations: tuple[str, ...] = ()
     notes: str | None = None
 
+    @property
+    def is_wildcard(self) -> bool:
+        """A manufacturer-wide entry for a documented main-table field.
+
+        Used only when no exact model entry matches. It makes no claim about
+        any particular body: the field is either in the file, or the counter is
+        reported as unavailable.
+        """
+        return self.model.strip() == WILDCARD_MODEL
+
     def matches_name(self, reported_model: str) -> bool:
+        if self.is_wildcard:
+            return False
         candidate = normalize_name(reported_model)
         if not candidate:
             return False

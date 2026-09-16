@@ -90,7 +90,12 @@ class CameraRegistry:
     def find_model(
         self, reported_manufacturer: str | None, reported_model: str | None
     ) -> CameraModel | None:
-        """Find a model by reported names. Returns None rather than guessing."""
+        """Find a model by reported names. Returns None rather than guessing.
+
+        An exact model entry always wins. A manufacturer-wide entry is used
+        only when no exact entry matches, and only when the manufacturer itself
+        is known - it is never applied across makes.
+        """
         if not reported_model:
             return None
         candidates: Sequence[ManufacturerEntry]
@@ -99,10 +104,17 @@ class CameraRegistry:
             candidates = (entry,) if entry is not None else ()
         else:
             candidates = self.entries
+
         for candidate in candidates:
             for model in candidate.models:
                 if model.matches_name(reported_model):
                     return model
+
+        if reported_manufacturer:
+            for candidate in candidates:
+                for model in candidate.models:
+                    if model.is_wildcard:
+                        return model
         return None
 
     def find_by_usb_ids(self, vid: int, pid: int) -> tuple[CameraModel, ...]:
@@ -173,6 +185,7 @@ def _parse_method(
             citation=citation,
             firmware_range=raw.get("firmware_range"),
             value_spec=value_spec,
+            invalid_values=tuple(int(item) for item in raw.get("invalid_values", [])),
             notes=raw.get("notes"),
         )
     except (KeyError, ValueError) as exc:

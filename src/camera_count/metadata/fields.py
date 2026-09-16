@@ -107,6 +107,18 @@ def counters_from_tags(
 
         key, raw = found
         value = parse_counter_value(raw)
+        if value is not None and method.is_invalid_value(value):
+            results.append(
+                Unavailable(
+                    message=EXACT_SHUTTER_COUNT_NOT_AVAILABLE,
+                    reason=(
+                        f"{key} holds {value}, which the documented source records as "
+                        "'not available' rather than as a count."
+                    ),
+                    count_type=method.count_type,
+                )
+            )
+            continue
         if value is None:
             results.append(
                 Unavailable(

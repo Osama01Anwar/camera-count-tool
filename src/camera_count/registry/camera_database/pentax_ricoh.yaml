@@ -2,7 +2,6 @@
 #
 # Pentax cameras have shipped under three separate USB vendor ids across the
 # Pentax, Pentax Ricoh Imaging and Ricoh eras, so all three are listed.
-# Models are added only with a citation for the exact-count method.
 manufacturer: Pentax / Ricoh
 manufacturer_aliases:
   - PENTAX
@@ -26,4 +25,32 @@ usb_vendor_ids:
       kind: url
       reference: http://www.linux-usb.org/usb.ids
       note: 'usb.ids vendor entry: "05ca  Ricoh Co., Ltd" (retrieved 2026-09-16)'
-models: []
+models:
+  - model: "*"
+    exact_count_available: true
+    methods:
+      - type: makernote_field
+        identifier: Pentax:ShutterCount
+        count_type: mechanical
+        verification_status: documented
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Pentax.pm:2276
+          note: >-
+            Main Pentax MakerNotes table, tag 0x005d ShutterCount. The source
+            states it is used by all Pentax DSLRs except the *istD and *istDS
+            before firmware 2.0, that it counts shutter actuations even when no
+            image is recorded, and that it excludes actuations from live view and
+            video recording. The stored value is a big-endian 32-bit integer
+            encrypted with the capture date and time; ExifTool decrypts it, and
+            this program reads the decrypted value.
+    limitations:
+      - >-
+        The source notes that this counter may be reset when a camera is
+        serviced, so it records actuations since the last reset rather than since
+        manufacture.
+      - >-
+        It does not include actuations from live view or video recording.
+      - >-
+        The *istD and *istDS before firmware 2.0 do not write this field; for
+        those bodies the counter is reported as NOT AVAILABLE.

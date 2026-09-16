@@ -131,6 +131,7 @@ def supported(
             {
                 "manufacturer": entry.manufacturer,
                 "model": model.model,
+                "applies_to_any_model": model.is_wildcard,
                 "exact_count_available": model.exact_count_available,
                 "methods": [
                     {
@@ -176,7 +177,12 @@ def _render_supported(manufacturers: list[str], rows: list[dict[str, Any]]) -> s
 
     for row in rows:
         mark = "yes" if row["exact_count_available"] else "no"
-        lines.append(f"{row['manufacturer']} {row['model']}  exact count: {mark}")
+        label = (
+            "(any model that writes the documented field)"
+            if row["applies_to_any_model"]
+            else row["model"]
+        )
+        lines.append(f"{row['manufacturer']} {label}  exact count: {mark}")
         for method in row["methods"]:
             lines.append(
                 f"    {method['counter']:<15} {method['type']:<16} {method['identifier']:<24}"

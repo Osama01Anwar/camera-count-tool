@@ -17,4 +17,9 @@ usb_vendor_ids:
       kind: url
       reference: http://www.linux-usb.org/usb.ids
       note: 'usb.ids vendor entry: "07b4  Olympus Optical Co., Ltd" (retrieved 2026-09-16)'
+notes: >-
+  ExifTool 13.59 defines no shutter- or actuation-count tag for this
+  manufacturer. Searched on 2026-09-16 with
+  scripts/research_exiftool_tags.py over lib/Image/ExifTool/. No exact
+  count can be read from an image file until a source documents one.
 models: []

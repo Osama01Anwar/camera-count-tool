@@ -1,11 +1,18 @@
 # Canon
 #
-# Models are added only with a citation for the exact-count method. Until a
-# model appears here with a documented method, Canon bodies report
-# EXACT SHUTTER COUNT NOT AVAILABLE, which is the correct result.
+# Canon stores its actuation counter in model-specific CameraInfo tables, so
+# entries here are per model. The model strings are the ones ExifTool matches on
+# to choose each table, which are the strings the camera writes to EXIF Model.
 #
-# manufacturer_aliases are matching hints for what a camera reports in its PTP
-# DeviceInfo or EXIF Make field. They never affect whether a count is shown.
+# Deliberately NOT registered:
+#   * EOS-1D Mark III (CameraInfo1DmkIII tag 0x176). The source notes the value
+#     "may be valid only for some 1DmkIII copies, even running the same
+#     firmware". A number that may or may not be the count does not meet this
+#     project's bar, so this model reports NOT AVAILABLE.
+#   * PowerShot G5 X Mark II. Its table defines two separate ShutterCount tags,
+#     and which one applies is not resolved here.
+#   * EOS-1D / 1Ds / 1D Mark II family (FileInfo). Selection depends on byte
+#     order and model conditions that need per-body verification first.
 manufacturer: Canon
 manufacturer_aliases:
   - Canon Inc.
@@ -16,4 +23,112 @@ usb_vendor_ids:
       kind: url
       reference: http://www.linux-usb.org/usb.ids
       note: 'usb.ids vendor entry: "04a9  Canon, Inc." (retrieved 2026-09-16)'
-models: []
+models:
+  - model: Canon EOS R5
+    aliases:
+      - EOS R5
+    exact_count_available: true
+    methods:
+      - type: makernote_field
+        identifier: Canon:ShutterCount
+        count_type: total_releases
+        verification_status: documented
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Canon.pm:4834
+          note: >-
+            CameraInfoR6 table, tag 0x0af1 ShutterCount, int32u, noted as
+            including electronic and mechanical shutter. The table is selected
+            for models matching "EOS R5" or "EOS R6" (Canon.pm:1446-1448).
+    limitations:
+      - >-
+        The counter covers electronic and mechanical actuations together, so it
+        is reported as a total rather than as a mechanical count.
+
+  - model: Canon EOS R6
+    aliases:
+      - EOS R6
+    exact_count_available: true
+    methods:
+      - type: makernote_field
+        identifier: Canon:ShutterCount
+        count_type: total_releases
+        verification_status: documented
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Canon.pm:4834
+          note: >-
+            CameraInfoR6 table, tag 0x0af1 ShutterCount, int32u, noted as
+            including electronic and mechanical shutter. The table is selected
+            for models matching "EOS R5" or "EOS R6" (Canon.pm:1446-1448).
+    limitations:
+      - >-
+        The counter covers electronic and mechanical actuations together, so it
+        is reported as a total rather than as a mechanical count.
+
+  - model: Canon EOS R6m2
+    aliases:
+      - EOS R6m2
+      - Canon EOS R6 Mark II
+    exact_count_available: true
+    methods:
+      - type: makernote_field
+        identifier: Canon:ShutterCount
+        count_type: total_releases
+        verification_status: documented
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Canon.pm:4849
+          note: >-
+            CameraInfoR6m2 table, tag 0x0d29 ShutterCount, int32u, noted as
+            including electronic and mechanical shutter. The table is selected
+            for models matching "EOS R6m2", "EOS R8" or "EOS R50"
+            (Canon.pm:1451-1453).
+    limitations:
+      - >-
+        The counter covers electronic and mechanical actuations together, so it
+        is reported as a total rather than as a mechanical count.
+
+  - model: Canon EOS R8
+    aliases:
+      - EOS R8
+    exact_count_available: true
+    methods:
+      - type: makernote_field
+        identifier: Canon:ShutterCount
+        count_type: total_releases
+        verification_status: documented
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Canon.pm:4849
+          note: >-
+            CameraInfoR6m2 table, tag 0x0d29 ShutterCount, int32u, noted as
+            including electronic and mechanical shutter. The table is selected
+            for models matching "EOS R6m2", "EOS R8" or "EOS R50"
+            (Canon.pm:1451-1453).
+    limitations:
+      - >-
+        The counter covers electronic and mechanical actuations together, so it
+        is reported as a total rather than as a mechanical count.
+
+  - model: Canon EOS R50
+    aliases:
+      - EOS R50
+    exact_count_available: true
+    methods:
+      - type: makernote_field
+        identifier: Canon:ShutterCount
+        count_type: total_releases
+        verification_status: documented
+        citation:
+          kind: source_ref
+          reference: exiftool/lib/Image/ExifTool/Canon.pm:4849
+          note: >-
+            CameraInfoR6m2 table, tag 0x0d29 ShutterCount, int32u, noted as
+            including electronic and mechanical shutter. The table is selected
+            for models matching "EOS R6m2", "EOS R8" or "EOS R50"
+            (Canon.pm:1451-1453).
+    limitations:
+      - >-
+        The counter covers electronic and mechanical actuations together, so it
+        is reported as a total rather than as a mechanical count.

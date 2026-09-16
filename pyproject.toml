@@ -81,7 +81,8 @@ ignore = ["S101"]
 "src/camera_count/wpd/session.py" = ["N813"]
 "tests/**" = ["S", "ARG", "N"]
 "packaging/**" = ["S"]
-"scripts/**" = ["S"]
+# Generated Markdown tables cannot be wrapped without changing the output.
+"scripts/**" = ["S", "E501"]
 
 [tool.mypy]
 python_version = "3.12"
