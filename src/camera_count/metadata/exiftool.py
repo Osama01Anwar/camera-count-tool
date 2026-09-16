@@ -84,12 +84,15 @@ def _candidate_paths() -> list[Path]:
     # A source checkout that has run scripts/fetch_exiftool.py.
     vendor = Path(__file__).resolve().parents[3] / "packaging" / "vendor"
     candidates.append(vendor / "exiftool" / "exiftool.exe")
-    # The Perl distribution, for development machines that have Perl.
-    candidates.extend(sorted(vendor.glob("exiftool-*/exiftool")))
 
+    # A real executable beats a script that needs an interpreter, so anything
+    # on PATH comes before the Perl distribution.
     found = shutil.which("exiftool")
     if found:
         candidates.append(Path(found))
+
+    # The Perl distribution, for development machines that have Perl.
+    candidates.extend(sorted(vendor.glob("exiftool-*/exiftool")))
 
     return candidates
 
