@@ -178,13 +178,27 @@ def inspect_camera(
         if callable(closer):
             closer()
 
+    blocking = next(
+        (
+            result
+            for result in results
+            if isinstance(result, Unavailable) and result.count_type is None
+        ),
+        None,
+    )
+    counters = (
+        build_counter_slots(results)
+        if blocking is None
+        else build_counter_slots(results, absent_reason=blocking.reason)
+    )
+
     return InspectionResult(
         identity=identity,
         device=device,
         model=model,
         adapter=adapter.name,
         results=results,
-        counters=build_counter_slots(results),
+        counters=counters,
         log=log,
         detection=report,
     )
