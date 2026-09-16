@@ -27,6 +27,19 @@ Something rewrote it. Messaging apps, social networks, cloud galleries, editors
 and converters all strip or rewrite metadata. Use a file copied straight off the
 memory card or out of the camera.
 
+The tool prints which check failed and what it saw, so you can tell the
+difference between "this was resized" and "this was saved by Lightroom".
+
+### It was rejected for software made by the camera's own manufacturer. Really?
+
+Yes. Nikon Capture, NX Studio, Canon Digital Photo Professional, Sony Imaging
+Edge and their equivalents rewrite the file when they save it. Once that has
+happened the camera is no longer the author of the metadata, and the whole basis
+for trusting a field in it is gone.
+
+The count in such a file is often still correct - but "often" is not what this
+tool is for. Ask for a file copied straight off the card.
+
 ### Does it work with raw files?
 
 Yes - NEF, CR2, CR3, ARW, RAF, RW2, ORF, PEF, DNG and the rest. Raw files are

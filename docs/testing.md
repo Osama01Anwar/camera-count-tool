@@ -49,6 +49,32 @@ They skip unless the distribution has been fetched:
 uv run python scripts/fetch_exiftool.py --mode source
 ```
 
+### Verifying accuracy against ExifTool
+
+The test that matters most cannot be a unit test, because it has to check the
+program a user actually installed:
+
+```powershell
+python scripts/verify_accuracy.py PHOTO.NEF
+python scripts/verify_accuracy.py --samples
+python scripts/verify_accuracy.py --samples --cli .venv/Scripts/camera-count.exe
+```
+
+It runs `camera-count exif --json` and then asks ExifTool directly about the
+same file, and asserts that every number printed equals the value of the field
+it cites, and that no number is printed for a file that failed the originality
+checks.
+
+Pass `--cli` deliberately. Without it the script uses whatever `camera-count`
+is on PATH, which can be an older installed copy than the checkout you are
+sitting in - that mistake is how a bug in the originality checks survived a
+green test run once already.
+
+**Point it at your own camera files.** A file copied straight off a memory card
+is the most useful input this project can be given, because every sample image
+that ships with ExifTool has been truncated or rewritten, so none of them can
+demonstrate the positive path end to end.
+
 ### GUI smoke tests
 
 `tests/gui/` uses pytest-qt with `QT_QPA_PLATFORM=offscreen`. They check that a

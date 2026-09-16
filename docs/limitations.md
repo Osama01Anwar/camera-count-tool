@@ -47,9 +47,20 @@ Consequences worth knowing:
 - A photo sent through a messaging app, social network or cloud gallery will
   almost always fail. Those services strip metadata.
 - A DNG produced by Adobe DNG Converter is a conversion, not an original.
+- **A file opened and saved by the manufacturer's own software is refused.**
+  Nikon Capture, NX Studio, Canon Digital Photo Professional, Sony Imaging
+  Edge, Olympus Workspace and the rest all rewrite the file. The badge on the
+  software makes no difference: the camera did not write that file any more, so
+  nothing in it is a camera original. Ask the seller for a file copied straight
+  off the memory card.
+- A file that ExifTool itself has written to is refused for the same reason.
 - The dimension check is applied only to JPEG and HEIC. In a raw file the EXIF
   dimensions can legitimately describe an embedded preview, and a check that
   misfires would be worse than no check.
+
+This is deliberately strict, and it will refuse files whose counts would in
+fact have been fine. That is the trade: a refusal costs you a second request to
+the seller, whereas a wrong number costs you a camera.
 
 ## What a count does not tell you
 

@@ -80,6 +80,47 @@ def test_editor_software_fails(software: str) -> None:
     assert any(check.name == "editing software" for check in verdict.failures)
 
 
+@pytest.mark.parametrize(
+    "software",
+    [
+        # Found by running the packaged release against a real Nikon raw file:
+        # the manufacturer's own editor had rewritten it, and the check passed.
+        "Nikon Capture Editor 4.3.1 W",
+        "Capture NX 2.4.7 W",
+        "ViewNX-i 1.4.3 W",
+        "NX Studio 1.7.0 W",
+        "Digital Photo Professional",
+        "Sony Imaging Edge Desktop 4.2",
+        "Olympus Workspace 2.1",
+        "SILKYPIX Developer Studio 11",
+        "Phocus 3.7.1",
+        "Sigma Photo Pro 6.8",
+        "PENTAX Digital Camera Utility 5",
+        "ExifTool 13.59",
+    ],
+)
+def test_a_manufacturers_own_editor_is_still_an_editor(software: str) -> None:
+    """A file saved by Nikon Capture has been rewritten by software.
+
+    Whose badge is on the software makes no difference: the camera did not write
+    that file, so nothing in it is a camera original any more.
+    """
+    verdict = assess_originality(original_jpeg(**{"IFD0:Software": software}))
+
+    assert not verdict.is_original
+    failure = next(check for check in verdict.failures if check.name == "editing software")
+    assert "written by software" in failure.detail
+
+
+def test_the_software_check_explains_itself_either_way() -> None:
+    absent = assess_originality(original_jpeg())
+    recorded = next(check for check in absent.checks if check.name == "editing software")
+
+    assert recorded.passed
+    assert "not a known editor" in recorded.detail
+    assert "No editing software is recorded" not in recorded.detail
+
+
 def test_camera_firmware_in_software_is_fine() -> None:
     verdict = assess_originality(original_jpeg(**{"IFD0:Software": "Ver.1.40"}))
 
@@ -144,7 +185,7 @@ def test_verdict_reason_lists_every_failure() -> None:
     verdict = assess_originality(tags)
 
     assert "MakerNotes" in verdict.reason
-    assert "editor" in verdict.reason
+    assert "editing software" in verdict.reason
 
 
 # --- helpers -----------------------------------------------------------------

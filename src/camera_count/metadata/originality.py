@@ -51,7 +51,38 @@ MAKER_GROUPS: Final[frozenset[str]] = frozenset(
 
 #: Substrings that identify editing software in a Software-like tag. A camera
 #: normally writes its firmware version there instead.
+#:
+#: The manufacturers' own editors matter as much as the third-party ones, and
+#: are easier to miss: a file saved by Nikon Capture, Canon DPP or Sony Imaging
+#: Edge has been rewritten by software, whatever badge is on it. So has a file
+#: that ExifTool itself has written to.
 EDITOR_SIGNATURES: Final[tuple[str, ...]] = (
+    # Manufacturer editors and utilities
+    "nikon capture",
+    "capture editor",
+    "capture nx",
+    "viewnx",
+    "nx studio",
+    "nikon transfer",
+    "digital photo professional",
+    "canon utilities",
+    "imaging edge",
+    "sony raw driver",
+    "olympus workspace",
+    "olympus viewer",
+    "om workspace",
+    "raw file converter",
+    "silkypix",
+    "phocus",
+    "fujifilm x raw studio",
+    "photofunstudio",
+    "pentax digital camera utility",
+    "sigma photo pro",
+    # Metadata tools: if one of these wrote the file, it is not untouched
+    "exiftool",
+    "exifeditor",
+    "metadata++",
+    # Third-party editors and pipelines
     "photoshop",
     "lightroom",
     "camera raw",
@@ -222,18 +253,19 @@ def assess_originality(tags: dict[str, Any]) -> OriginalityVerdict:
     if software is not None:
         text = str(software[1]).casefold()
         editor = next((sig for sig in EDITOR_SIGNATURES if sig in text), None)
-    checks.append(
-        Check(
-            "editing software",
-            editor is None,
-            f"No editing software is recorded ({software[1]})."
-            if software is not None and editor is None
-            else "No editing software is recorded."
-            if software is None
-            else f"{software[0]} says {software[1]!r}, which is an editor, "
-            "so this file was written by software rather than by the camera.",
+    if software is None:
+        software_detail = "No software is recorded, as expected for a camera original."
+    elif editor is None:
+        software_detail = (
+            f"{software[0]} says {software[1]!r}, which is not a known editor - "
+            "cameras record their firmware version here."
         )
-    )
+    else:
+        software_detail = (
+            f"{software[0]} says {software[1]!r}. {editor!r} identifies editing "
+            "software, so this file was written by software rather than by the camera."
+        )
+    checks.append(Check("editing software", editor is None, software_detail))
 
     file_type = find_tag(tags, "FileType")
     type_ok = file_type is not None and str(file_type[1]).upper() in ORIGINAL_FILE_TYPES
