@@ -25,7 +25,7 @@ packaging/output/
 Thumbs.db
 
 # Claude Code worktrees and local settings
-.claude/worktrees/
+.claude/
 .claude/settings.local.json
 
 # Local runtime data (never commit inspection data)
@@ -34,3 +34,4 @@ Thumbs.db
 *.db
 diagnostics-export*.json
 coverage.xml
+
