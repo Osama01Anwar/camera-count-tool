@@ -33,3 +33,4 @@ Thumbs.db
 *.sqlite3
 *.db
 diagnostics-export*.json
+coverage.xml
