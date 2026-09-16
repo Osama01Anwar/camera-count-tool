@@ -1,0 +1,118 @@
+name: New camera model
+description: Propose exact-count support for a camera model. A citation is required.
+title: "[model] Manufacturer Model - exact count support"
+labels: ["camera-model", "needs-citation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Support is added from **documentation**, never from observation alone.
+        An issue without a citation cannot be acted on, however confident the
+        report. If you have only "this other tool showed me a number", say so -
+        that is still useful as a lead, but it will stay unverified.
+
+  - type: input
+    id: manufacturer
+    attributes:
+      label: Manufacturer
+      placeholder: Nikon
+    validations:
+      required: true
+
+  - type: input
+    id: model
+    attributes:
+      label: Model (exactly as the camera reports it)
+      placeholder: NIKON Z 6_2
+    validations:
+      required: true
+
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+      placeholder: "1.40"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: method_type
+    attributes:
+      label: Method type
+      options:
+        - ptp_property
+        - ptp_operation
+        - makernote_field
+        - service_interface
+    validations:
+      required: true
+
+  - type: input
+    id: identifier
+    attributes:
+      label: Identifier
+      description: Property code, operation code, or MakerNotes tag id - in hex where applicable.
+      placeholder: "0xD1A3 or Nikon:ShutterCount"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: count_type
+    attributes:
+      label: Counter type (as the manufacturer defines it)
+      options:
+        - mechanical
+        - electronic
+        - efc
+        - total_releases
+    validations:
+      required: true
+
+  - type: textarea
+    id: citation
+    attributes:
+      label: Citation (required)
+      description: |
+        A URL to manufacturer or protocol documentation, or a `repo/path:line`
+        reference into a public source tree - for example an ExifTool tag table
+        (`exiftool/lib/Image/ExifTool/Nikon.pm:1234`) or libgphoto2's PTP
+        definitions (`libgphoto2/camlibs/ptp2/ptp.h:567`).
+      placeholder: exiftool/lib/Image/ExifTool/Nikon.pm:1234
+    validations:
+      required: true
+
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Fixture
+      description: |
+        Attach a recorded PTP transaction or ExifTool JSON output
+        (`exiftool -j -n -G1 -a -u FILE > fixture.json`). Redact the serial
+        number. Do not attach an original image unless you own it and are happy
+        for it to be redistributed under this repository's licence.
+    validations:
+      required: true
+
+  - type: textarea
+    id: hardware_test
+    attributes:
+      label: Hardware test (optional, enables hardware_verified)
+      description: |
+        Reading before, N shutter presses made **by you on the camera**, reading
+        after, and confirmation that the difference is exactly N. The software
+        never triggers the shutter.
+      placeholder: |
+        Before: 12345
+        Presses: 10
+        After: 12355
+        Service reading (if available): 12355
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: The identifier above comes from the cited source, not from guessing or trial and error.
+          required: true
+        - label: I understand the entry will be merged as `documented` at most, until a hardware test is recorded.
+          required: true

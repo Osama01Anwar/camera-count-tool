@@ -1,0 +1,75 @@
+name: Bug report
+description: Something behaved incorrectly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you file:** `EXACT COUNT UNAVAILABLE` is not a bug. It is the
+        correct result when no authoritative source is available for your
+        camera. If you believe a documented source exists, please use the
+        "New camera model" template instead.
+
+        A wrong *number* is the most serious bug this project can have. Please
+        include everything below if that is what you are reporting.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `camera-count --version`.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS
+        - Linux
+    validations:
+      required: true
+
+  - type: input
+    id: camera
+    attributes:
+      label: Camera and firmware
+      placeholder: Canon EOS R6, firmware 1.8.2
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened
+      description: The exact command you ran and its full output.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics export
+      description: |
+        Run `camera-count diagnostics --export log.json` and attach the file.
+        Serial numbers are redacted unless you opt in.
+      render: shell
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have removed anything from the logs I do not want published.
+          required: true

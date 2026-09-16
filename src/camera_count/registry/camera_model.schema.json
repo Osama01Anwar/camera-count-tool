@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Osama01Anwar/camera-count-tool/schemas/camera_model.schema.json",
+  "title": "Camera Count Tool manufacturer registry file",
+  "description": "One file per manufacturer. Every method that can produce a displayed number must carry a citation. A model with no trusted method reports its count as unavailable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manufacturer", "models"],
+  "properties": {
+    "manufacturer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Canonical manufacturer name as this project spells it."
+    },
+    "manufacturer_aliases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "description": "Other spellings a camera may report, e.g. 'NIKON CORPORATION'."
+    },
+    "usb_vendor_ids": {
+      "type": "array",
+      "description": "Every USB vendor id this manufacturer ships cameras under. Each one carries its own citation.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "citation"],
+        "properties": {
+          "id": { "$ref": "#/$defs/usbId" },
+          "citation": { "$ref": "#/$defs/citation" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "notes": { "type": "string" },
+    "models": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/model" }
+    }
+  },
+  "$defs": {
+    "usbId": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference"],
+      "properties": {
+        "kind": { "enum": ["url", "source_ref"] },
+        "reference": {
+          "type": "string",
+          "minLength": 3,
+          "description": "An http(s) URL, or a 'repo/path:line' reference into a public source tree."
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "identifier",
+        "count_type",
+        "citation",
+        "verification_status"
+      ],
+      "properties": {
+        "type": {
+          "enum": ["ptp_property", "ptp_operation", "makernote_field", "service_interface"]
+        },
+        "identifier": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Property code, operation code (hex), or MakerNotes group:tag name."
+        },
+        "count_type": {
+          "enum": ["mechanical", "electronic", "efc", "total_releases"],
+          "description": "Manufacturer-defined counter kind. Counters are never merged or summed."
+        },
+        "firmware_range": {
+          "type": "string",
+          "description": "Firmware versions this method is documented for, e.g. '>=1.30'."
+        },
+        "citation": { "$ref": "#/$defs/citation" },
+        "verification_status": {
+          "enum": ["unverified", "documented", "hardware_verified"],
+          "description": "Only documented and hardware_verified may produce a displayed number. hardware_verified additionally requires a row in docs/hardware-test-matrix.md."
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "exact_count_available"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Model string exactly as the camera reports it."
+        },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "usb_vid": { "$ref": "#/$defs/usbId" },
+        "usb_pid": { "$ref": "#/$defs/usbId" },
+        "protocol": {
+          "enum": ["ptp_usb", "mtp_wpd", "mass_storage", "unknown"]
+        },
+        "exact_count_available": {
+          "type": "boolean",
+          "description": "True only when at least one method is documented or hardware_verified."
+        },
+        "methods": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/method" }
+        },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

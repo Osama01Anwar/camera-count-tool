@@ -1,0 +1,15 @@
+# Nikon
+#
+# Models are added only with a citation for the exact-count method.
+manufacturer: Nikon
+manufacturer_aliases:
+  - NIKON
+  - NIKON CORPORATION
+  - Nikon Corporation
+usb_vendor_ids:
+  - id: 0x04b0
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "04b0  Nikon Corp." (retrieved 2026-09-16)'
+models: []

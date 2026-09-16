@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Osama01Anwar/camera-count-tool/security/advisories/new
+    about: Report privately. Please do not open a public issue.
+  - name: Which cameras are supported?
+    url: https://github.com/Osama01Anwar/camera-count-tool/blob/main/docs/manufacturer-support.md
+    about: Generated from the camera registry, with a citation per method.
+  - name: Why does my camera say EXACT COUNT UNAVAILABLE?
+    url: https://github.com/Osama01Anwar/camera-count-tool/blob/main/docs/limitations.md
+    about: That is a correct result when no authoritative source exists.

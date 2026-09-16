@@ -1,0 +1,19 @@
+# Canon
+#
+# Models are added only with a citation for the exact-count method. Until a
+# model appears here with a documented method, Canon bodies report
+# EXACT SHUTTER COUNT NOT AVAILABLE, which is the correct result.
+#
+# manufacturer_aliases are matching hints for what a camera reports in its PTP
+# DeviceInfo or EXIF Make field. They never affect whether a count is shown.
+manufacturer: Canon
+manufacturer_aliases:
+  - Canon Inc.
+  - CANON
+usb_vendor_ids:
+  - id: 0x04a9
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "04a9  Canon, Inc." (retrieved 2026-09-16)'
+models: []

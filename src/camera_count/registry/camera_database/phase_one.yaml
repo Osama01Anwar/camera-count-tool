@@ -1,0 +1,14 @@
+# Phase One
+#
+# Models are added only with a citation for the exact-count method.
+manufacturer: Phase One
+manufacturer_aliases:
+  - PHASE ONE
+  - Phase One A/S
+usb_vendor_ids:
+  - id: 0x22db
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "22db  Phase One" (retrieved 2026-09-16)'
+models: []

@@ -1,0 +1,20 @@
+# Olympus / OM Digital Solutions
+#
+# The camera business moved from Olympus Corporation to OM Digital Solutions,
+# so both names appear on bodies and in metadata. Models are added only with a
+# citation for the exact-count method.
+manufacturer: Olympus / OM System
+manufacturer_aliases:
+  - OLYMPUS
+  - OLYMPUS CORPORATION
+  - OLYMPUS IMAGING CORP.
+  - OLYMPUS OPTICAL CO.,LTD
+  - OM Digital Solutions
+  - OM SYSTEM
+usb_vendor_ids:
+  - id: 0x07b4
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "07b4  Olympus Optical Co., Ltd" (retrieved 2026-09-16)'
+models: []

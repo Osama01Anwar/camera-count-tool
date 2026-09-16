@@ -1,0 +1,14 @@
+# Hasselblad
+#
+# Models are added only with a citation for the exact-count method.
+manufacturer: Hasselblad
+manufacturer_aliases:
+  - HASSELBLAD
+  - Victor Hasselblad AB
+usb_vendor_ids:
+  - id: 0x2756
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "2756  Victor Hasselblad AB" (retrieved 2026-09-16)'
+models: []

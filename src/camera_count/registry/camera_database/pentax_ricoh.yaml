@@ -1,0 +1,29 @@
+# Pentax / Ricoh
+#
+# Pentax cameras have shipped under three separate USB vendor ids across the
+# Pentax, Pentax Ricoh Imaging and Ricoh eras, so all three are listed.
+# Models are added only with a citation for the exact-count method.
+manufacturer: Pentax / Ricoh
+manufacturer_aliases:
+  - PENTAX
+  - PENTAX Corporation
+  - PENTAX RICOH IMAGING
+  - RICOH
+  - RICOH IMAGING COMPANY, LTD.
+usb_vendor_ids:
+  - id: 0x0a17
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "0a17  Pentax Corp." (retrieved 2026-09-16)'
+  - id: 0x25fb
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "25fb  Pentax Ricoh Imaging Co., Ltd" (retrieved 2026-09-16)'
+  - id: 0x05ca
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "05ca  Ricoh Co., Ltd" (retrieved 2026-09-16)'
+models: []

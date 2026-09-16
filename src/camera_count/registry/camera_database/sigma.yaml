@@ -1,0 +1,14 @@
+# Sigma
+#
+# Models are added only with a citation for the exact-count method.
+manufacturer: Sigma
+manufacturer_aliases:
+  - SIGMA
+  - SIGMA Corporation
+usb_vendor_ids:
+  - id: 0x1003
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "1003  Sigma Corp." (retrieved 2026-09-16)'
+models: []

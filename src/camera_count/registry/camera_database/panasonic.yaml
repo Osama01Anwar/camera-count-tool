@@ -1,0 +1,15 @@
+# Panasonic
+#
+# Models are added only with a citation for the exact-count method.
+manufacturer: Panasonic
+manufacturer_aliases:
+  - PANASONIC
+  - Panasonic Corporation
+  - LUMIX
+usb_vendor_ids:
+  - id: 0x04da
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "04da  Panasonic (Matsushita)" (retrieved 2026-09-16)'
+models: []

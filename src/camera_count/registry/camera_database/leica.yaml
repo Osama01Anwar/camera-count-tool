@@ -1,0 +1,15 @@
+# Leica
+#
+# Models are added only with a citation for the exact-count method.
+manufacturer: Leica
+manufacturer_aliases:
+  - LEICA
+  - LEICA CAMERA AG
+  - Leica Camera AG
+usb_vendor_ids:
+  - id: 0x1a98
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "1a98  Leica Camera AG" (retrieved 2026-09-16)'
+models: []

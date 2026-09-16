@@ -1,0 +1,18 @@
+# Fujifilm
+#
+# Models are added only with a citation for the exact-count method.
+#
+# Note for contributors: several Fujifilm bodies expose a counter that counts
+# saved images rather than shutter actuations. A counter like that is not an
+# authoritative shutter-count source and must not be registered as one.
+manufacturer: Fujifilm
+manufacturer_aliases:
+  - FUJIFILM
+  - FUJI PHOTO FILM CO., LTD.
+usb_vendor_ids:
+  - id: 0x04cb
+    citation:
+      kind: url
+      reference: http://www.linux-usb.org/usb.ids
+      note: 'usb.ids vendor entry: "04cb  Fuji Photo Film Co., Ltd" (retrieved 2026-09-16)'
+models: []
