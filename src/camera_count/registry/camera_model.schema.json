@@ -90,6 +90,30 @@
           "enum": ["unverified", "documented", "hardware_verified"],
           "description": "Only documented and hardware_verified may produce a displayed number. hardware_verified additionally requires a row in docs/hardware-test-matrix.md."
         },
+        "value": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source"],
+          "description": "Where the integer sits in the operation's answer. Required for ptp_operation methods; the shape must come from the same source as the citation, never from trial and error.",
+          "properties": {
+            "source": {
+              "enum": ["response_parameter", "data_uint32"],
+              "description": "response_parameter: a 32-bit response parameter. data_uint32: a 32-bit little-endian integer in the data phase."
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4,
+              "description": "Which response parameter, for source=response_parameter."
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1048572,
+              "description": "Byte offset into the data phase, for source=data_uint32."
+            }
+          }
+        },
         "notes": { "type": "string" }
       }
     },

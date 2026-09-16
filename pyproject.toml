@@ -14,12 +14,11 @@ keywords = ["camera", "shutter count", "actuation count", "ptp", "exif", "used c
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
-    "Environment :: X11 Applications :: Qt",
+    "Environment :: Win32 (MS Windows)",
     "Intended Audience :: End Users/Desktop",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: Microsoft :: Windows :: Windows 10",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Multimedia :: Graphics :: Capture :: Digital Camera",
 ]
@@ -28,13 +27,17 @@ dependencies = [
     "PyYAML>=6.0",
     "jsonschema>=4.21",
     "platformdirs>=4.2",
-    "pyusb>=1.2.1 ; sys_platform != 'win32'",
-    "libusb-package>=1.0.26.3 ; sys_platform != 'win32'",
-    "comtypes>=1.4.1 ; sys_platform == 'win32'",
+    "comtypes>=1.4.1",
     "PySide6-Essentials>=6.7",
 ]
 
 [project.optional-dependencies]
+# Optional: only for users who have installed a WinUSB/libusb driver for their
+# camera themselves. This program never installs or replaces a driver.
+winusb = [
+    "pyusb>=1.2.1",
+    "libusb-package>=1.0.26.3",
+]
 dev = [
     "pytest>=8.2",
     "pytest-cov>=5.0",
@@ -74,6 +77,8 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "PTH", "RET", "A
 ignore = ["S101"]
 
 [tool.ruff.lint.per-file-ignores]
+# The COM type libraries comtypes generates are named by Windows, not by us.
+"src/camera_count/wpd/session.py" = ["N813"]
 "tests/**" = ["S", "ARG", "N"]
 "packaging/**" = ["S"]
 "scripts/**" = ["S"]

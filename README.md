@@ -6,9 +6,12 @@ Buying a used camera means trusting a number. This tool refuses to invent one.
 It reads the exact shutter/actuation count directly from a connected camera, or
 from an original camera file, and shows nothing at all when it cannot.
 
+**Windows 10 and 11 (x64).**
+
 - **Offline.** No network access anywhere in the program. No accounts, no telemetry, no uploads.
 - **Read-only.** It never changes a setting, releases the shutter, writes to the card, touches firmware, or resets a counter. Every protocol operation is checked against a read-only allow-list before it is sent.
-- **Cited.** Every number traces to a specific documented source - a PTP property, a vendor operation, or a manufacturer MakerNotes field - recorded in the camera registry with a citation.
+- **No driver changes.** It talks to the camera through Windows Portable Devices, the path Windows already uses. It never installs, replaces, or removes a driver.
+- **Cited.** Every number traces to a specific documented source - a device property, a vendor operation, or a manufacturer MakerNotes field - recorded in the camera registry with a citation.
 - **Binary output.** `VERIFIED EXACT COUNT` with an integer, or `EXACT COUNT UNAVAILABLE` with a reason. The second one is a correct, successful result.
 
 ## What it will never do
@@ -26,32 +29,33 @@ notice that says exactly what it is - never in a shutter-count slot.
 
 ### Option 1 - download a release (no Python needed)
 
-Grab the build for your system from the
-[Releases page](https://github.com/Osama01Anwar/camera-count-tool/releases):
+From the [Releases page](https://github.com/Osama01Anwar/camera-count-tool/releases):
 
-| System | File | Notes |
-|---|---|---|
-| Windows 10/11 x64 | `CameraCountTool-<version>-windows-x64-setup.exe` | Installer. A portable `.zip` is also published. |
-| macOS 12+ | `CameraCountTool-<version>-macos.dmg` | Unsigned - right-click the app and choose Open the first time. |
-| Linux x64 | `CameraCountTool-<version>-x86_64.AppImage` | `chmod +x` then run. |
+| File | What it is |
+|---|---|
+| `CameraCountTool-<version>-windows-x64-setup.exe` | Installer. Adds the desktop app and the `camera-count` command. |
+| `CameraCountTool-<version>-windows-x64-portable.zip` | Unzip and run. Nothing is written outside the folder except your local results database. |
 
 Every release ships `SHA256SUMS.txt`. Check it before you run anything.
 
+Releases are not code-signed, so Windows SmartScreen will warn on first run.
+Choose **More info → Run anyway**, or verify the SHA-256 first.
+
 ### Option 2 - install from this repository with Python 3.12+
 
-```bash
+```powershell
 uv tool install git+https://github.com/Osama01Anwar/camera-count-tool
 # or
 pipx install git+https://github.com/Osama01Anwar/camera-count-tool
 ```
 
-This gives you the `camera-count` CLI and the `camera-count-gui` desktop app.
-Installing this way expects [ExifTool](https://exiftool.org) on your `PATH` for
-image mode; the packaged releases bundle it.
+This gives you the `camera-count` command and the `camera-count-gui` desktop
+app. Installing this way expects [ExifTool](https://exiftool.org) on your
+`PATH` for image mode; the packaged releases bundle it.
 
 ## Use it
 
-```bash
+```powershell
 camera-count detect                 # what is connected, and how
 camera-count inspect                # identify the camera (model, serial, firmware)
 camera-count count                  # the counters, each one exact or NOT AVAILABLE
@@ -69,9 +73,15 @@ Add `--json` to any command for machine-readable output.
 ## Connecting the camera
 
 Set the camera's USB mode to **PTP / PC Remote / MTP**. Mass-storage mode gives
-no protocol access, and the tool will say so. Platform notes, including how to
-release a camera that Windows Explorer, macOS Image Capture, or Linux gvfs is
-holding, are in [docs/usb-debugging.md](docs/usb-debugging.md).
+no protocol access, and the tool will say so.
+
+If File Explorer or another program is holding the camera, close it and run
+`camera-count detect` again - this tool will tell you what has the device
+rather than forcing it free. See [docs/usb-debugging.md](docs/usb-debugging.md).
+
+Cameras that only work through a vendor-installed WinUSB driver are supported
+through an optional libusb backend: `uv pip install "camera-count-tool[winusb]"`.
+This program will never install that driver for you.
 
 ## Supported cameras
 

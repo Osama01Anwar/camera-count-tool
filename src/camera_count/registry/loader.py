@@ -22,6 +22,7 @@ from camera_count.core.enums import (
     CountType,
     MethodType,
     Protocol,
+    ValueSource,
     VerificationStatus,
 )
 from camera_count.core.errors import RegistryError
@@ -30,6 +31,7 @@ from camera_count.registry.models import (
     CameraModel,
     ManufacturerEntry,
     RegisteredMethod,
+    ValueSpec,
     VendorId,
     make_source_id,
 )
@@ -151,6 +153,16 @@ def _parse_method(
 ) -> RegisteredMethod:
     where = f"{manufacturer} {model_name} method[{index}]"
     citation = _parse_citation(raw["citation"], where)
+    value_spec: ValueSpec | None = None
+    if "value" in raw:
+        try:
+            value_spec = ValueSpec(
+                source=ValueSource(raw["value"]["source"]),
+                index=int(raw["value"].get("index", 0)),
+                offset=int(raw["value"].get("offset", 0)),
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RegistryError(f"{where}: invalid value location: {exc}") from exc
     try:
         method = RegisteredMethod(
             source_id=make_source_id(manufacturer, model_name, index),
@@ -160,10 +172,17 @@ def _parse_method(
             verification_status=VerificationStatus(raw["verification_status"]),
             citation=citation,
             firmware_range=raw.get("firmware_range"),
+            value_spec=value_spec,
             notes=raw.get("notes"),
         )
     except (KeyError, ValueError) as exc:
         raise RegistryError(f"{where}: {exc}") from exc
+
+    if method.method_type is MethodType.PTP_OPERATION and method.value_spec is None:
+        raise RegistryError(
+            f"{where}: a ptp_operation method must say where the integer is; "
+            "add a 'value' block sourced from the same documentation as the citation"
+        )
     return method
 
 

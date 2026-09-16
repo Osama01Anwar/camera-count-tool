@@ -1,4 +1,10 @@
-"""Enumeration through libusb (Linux and macOS; optional on Windows).
+"""Optional enumeration through libusb.
+
+Windows reaches cameras through Windows Portable Devices, so this backend is
+not installed by default and is not required. It exists for one case: a user
+who has deliberately installed a WinUSB or libusb driver for their camera.
+This program never installs, replaces, or removes a driver - install the extra
+with ``uv pip install "camera-count-tool[winusb]"`` if you already run one.
 
 Reading descriptors does not require claiming the device. Reading the string
 descriptors does, so a device another process is holding still appears in the
@@ -8,7 +14,6 @@ it. That is far more useful than a camera that silently does not exist.
 
 from __future__ import annotations
 
-import platform
 from typing import Any
 
 from camera_count.core.enums import Protocol
@@ -46,14 +51,10 @@ class LibusbBackend:
     def is_available(self) -> tuple[bool, str | None]:
         modules = self._load()
         if modules is None:
-            if platform.system() == "Windows":
-                return False, (
-                    "pyusb is not installed. This is expected on Windows, where "
-                    "cameras are reached through Windows Portable Devices instead."
-                )
             return False, (
-                "pyusb is not installed. Install the packaged release, or "
-                "'pip install pyusb libusb-package'."
+                "the optional libusb backend is not installed. This is normal: "
+                "cameras are reached through Windows Portable Devices. Install "
+                "camera-count-tool[winusb] only if you already run a WinUSB driver."
             )
         usb_core, _ = modules
         try:
@@ -133,21 +134,14 @@ class LibusbBackend:
         return Protocol.UNKNOWN
 
     def _claimed_by(self, device: Any, interfaces: tuple[UsbInterface, ...]) -> str | None:
-        system = platform.system()
         for interface in interfaces:
             try:
                 if device.is_kernel_driver_active(interface.number):
-                    if system == "Darwin":
-                        return (
-                            "a macOS system service (Image Capture or Photos). Quit "
-                            "Image Capture and Photos, then reconnect the camera."
-                        )
-                    if system == "Linux":
-                        return (
-                            "a kernel driver or gvfs-gphoto2. Close any file manager "
-                            "showing the camera, or see docs/usb-debugging.md."
-                        )
-                    return "another program on this system"
+                    return (
+                        "another driver or program on this system. Close File "
+                        "Explorer windows showing the camera and try again; see "
+                        "docs/usb-debugging.md."
+                    )
             except (NotImplementedError, AttributeError):
                 return None
             except Exception:  # noqa: BLE001 - treat an unreadable state as unknown

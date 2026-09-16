@@ -14,7 +14,9 @@ from collections.abc import Iterable, Sequence
 from types import TracebackType
 from typing import Final
 
+from camera_count.core.enums import Protocol
 from camera_count.core.errors import ForbiddenOperationError, ProtocolError
+from camera_count.core.models import CameraIdentity
 from camera_count.diagnostics.log import TransactionLog
 from camera_count.ptp.constants import (
     DEFAULT_TIMEOUT_MS,
@@ -28,6 +30,7 @@ from camera_count.ptp.parsers import (
     ByteReader,
     DeviceInfo,
     DevicePropertyDescription,
+    coerce_counter,
     parse_device_info,
     parse_device_property_description,
     read_typed_value,
@@ -79,6 +82,20 @@ class PtpSession:
     @property
     def is_open(self) -> bool:
         return self._opened
+
+    def permit_operations(self, opcodes: Iterable[int]) -> None:
+        """Widen the allow-list to one adapter's cited vendor read operations."""
+        added = frozenset(opcodes) - self._allowed
+        if not added:
+            return
+        self._allowed = self._allowed | added
+        self._log.record(
+            operation="allow-list widened",
+            opcode=0,
+            response_name="OK",
+            note="permitted vendor read operations: "
+            + ", ".join(f"0x{code:04X}" for code in sorted(added)),
+        )
 
     def open(self) -> None:
         self._transport.open()
@@ -222,6 +239,36 @@ class PtpSession:
         reference = self._log.records[-1].reference
         value = read_typed_value(ByteReader(result.data, origin="DevicePropValue"), data_type)
         return value, reference
+
+    # -- the CameraLink interface --------------------------------------------
+
+    @property
+    def name(self) -> str:
+        return self._transport.name
+
+    def identity(self) -> CameraIdentity:
+        """Build an identity from DeviceInfo, leaving absent fields as None."""
+        info = self.device_info()
+        return CameraIdentity(
+            manufacturer=info.manufacturer or None,
+            model=info.model or None,
+            serial=info.serial_number or None,
+            firmware=info.device_version or None,
+            protocol=Protocol.PTP_USB,
+        )
+
+    def read_device_property(self, code: int) -> tuple[int, str] | None:
+        """Read a device property as a counter integer, or report its absence."""
+        answer = self.try_property_value(code)
+        if answer is None:
+            return None
+        value, reference = answer
+        return coerce_counter(value), reference
+
+    def execute_read_operation(
+        self, code: int, parameters: tuple[int, ...] = (), *, expect_data: bool = False
+    ) -> TransactionResult:
+        return self.execute(code, parameters, expect_data=expect_data)
 
     def try_property_value(
         self, property_code: int, data_type: DataType | None = None

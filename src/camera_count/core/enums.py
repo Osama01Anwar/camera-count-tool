@@ -32,6 +32,13 @@ class MethodType(StrEnum):
     SERVICE_INTERFACE = "service_interface"
 
 
+class ValueSource(StrEnum):
+    """Where in an operation's answer the documented integer sits."""
+
+    RESPONSE_PARAMETER = "response_parameter"
+    DATA_UINT32 = "data_uint32"
+
+
 class VerificationStatus(StrEnum):
     """How far a registry method has been verified.
 

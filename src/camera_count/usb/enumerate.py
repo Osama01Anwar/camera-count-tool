@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import platform
 from dataclasses import dataclass
 
 from camera_count.core.enums import Protocol
@@ -13,16 +12,15 @@ from camera_count.usb.wpd_backend import WpdBackend
 
 
 def default_backends() -> tuple[EnumerationBackend, ...]:
-    """Backends to try on this platform, in order of preference.
+    """Backends to try, in order of preference.
 
-    On Windows, WPD comes first: it is the supported way to reach a camera
-    without replacing the driver Windows installed. libusb is still tried,
-    because a user who has deliberately installed WinUSB for a device should
-    get the benefit of it - this program never installs one itself.
+    Windows Portable Devices comes first: it is the supported way to reach a
+    camera without touching the driver Windows installed. The optional libusb
+    backend is tried afterwards, because a user who has deliberately installed
+    WinUSB for a device should get the benefit of it - this program never
+    installs one itself.
     """
-    if platform.system() == "Windows":
-        return (WpdBackend(), LibusbBackend())
-    return (LibusbBackend(),)
+    return (WpdBackend(), LibusbBackend())
 
 
 @dataclass(frozen=True, slots=True)

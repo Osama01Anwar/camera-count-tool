@@ -13,6 +13,7 @@ from camera_count.core.enums import (
     CountType,
     MethodType,
     Protocol,
+    ValueSource,
     VerificationStatus,
 )
 from camera_count.core.sources import Citation, SourceRecord
@@ -32,6 +33,21 @@ def normalize_name(text: str) -> str:
 
 
 @dataclass(frozen=True, slots=True)
+class ValueSpec:
+    """Where the documented integer sits in an operation's answer."""
+
+    source: ValueSource
+    index: int = 0
+    offset: int = 0
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.index <= 4:
+            raise ValueError(f"response parameter index out of range: {self.index}")
+        if self.offset < 0:
+            raise ValueError(f"data offset must not be negative: {self.offset}")
+
+
+@dataclass(frozen=True, slots=True)
 class RegisteredMethod:
     """One documented way to read one counter from one model."""
 
@@ -42,7 +58,29 @@ class RegisteredMethod:
     verification_status: VerificationStatus
     citation: Citation
     firmware_range: str | None = None
+    value_spec: ValueSpec | None = None
     notes: str | None = None
+
+    @property
+    def is_camera_method(self) -> bool:
+        """True for methods read from the camera rather than from a file."""
+        return self.method_type in {
+            MethodType.PTP_PROPERTY,
+            MethodType.PTP_OPERATION,
+            MethodType.SERVICE_INTERFACE,
+        }
+
+    @property
+    def is_file_method(self) -> bool:
+        return self.method_type is MethodType.MAKERNOTE_FIELD
+
+    def numeric_identifier(self) -> int | None:
+        """The identifier as an integer, when it is a code rather than a name."""
+        text = self.identifier.strip()
+        try:
+            return int(text, 16) if text.lower().startswith("0x") else int(text)
+        except ValueError:
+            return None
 
     def is_trusted(self) -> bool:
         return self.verification_status in {
