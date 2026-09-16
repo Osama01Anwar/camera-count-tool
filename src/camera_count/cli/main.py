@@ -193,6 +193,78 @@ def _render_supported(manufacturers: list[str], rows: list[dict[str, Any]]) -> s
 
 
 @app.command()
+def report(
+    files: Annotated[
+        list[Path] | None,
+        typer.Argument(help="Original camera files. With none, the connected camera is inspected."),
+    ] = None,
+    report_format: Annotated[str, typer.Option("--format", help="html, pdf or json.")] = "html",
+    out: Annotated[Path | None, typer.Option("--out", help="Where to write the report.")] = None,
+    seller_notes: Annotated[str, typer.Option("--seller-notes", help="Optional note.")] = "",
+    buyer_notes: Annotated[str, typer.Option("--buyer-notes", help="Optional note.")] = "",
+    save: Annotated[
+        bool, typer.Option("--save/--no-save", help="Record this inspection locally.")
+    ] = True,
+) -> None:
+    """Produce a Used Camera Inspection Report."""
+    from camera_count.report import (  # noqa: PLC0415
+        ReportFormat,
+        from_image_analyses,
+        from_inspection,
+    )
+    from camera_count.report.builder import DEFAULT_STEMS, write_report  # noqa: PLC0415
+
+    try:
+        chosen = ReportFormat(report_format.lower())
+    except ValueError:
+        typer.echo(f"error: unknown format {report_format!r}. Use html, pdf or json.", err=True)
+        raise typer.Exit(EXIT_ERROR) from None
+
+    if files:
+        from camera_count.metadata import analyze_files  # noqa: PLC0415
+
+        analyses = analyze_files(files)
+        data = from_image_analyses(analyses, seller_notes=seller_notes, buyer_notes=buyer_notes)
+        found = any(analysis.has_exact_count for analysis in analyses)
+
+        def persist(database: Any) -> int:
+            return int(
+                database.save_image_inspection(
+                    analyses,
+                    seller_notes=seller_notes or None,
+                    buyer_notes=buyer_notes or None,
+                )
+            )
+    else:
+        result = inspect_camera()
+        data = from_inspection(result, seller_notes=seller_notes, buyer_notes=buyer_notes)
+        found = result.has_exact_count
+
+        def persist(database: Any) -> int:
+            return int(
+                database.save_inspection(
+                    result,
+                    seller_notes=seller_notes or None,
+                    buyer_notes=buyer_notes or None,
+                )
+            )
+
+    destination = out or Path(DEFAULT_STEMS[chosen])
+    written, digest = write_report(data, destination, chosen)
+    typer.echo(f"Wrote {written}")
+    typer.echo(f"Content SHA-256: {digest}")
+
+    if save:
+        from camera_count.db import Database  # noqa: PLC0415
+
+        database = Database()
+        inspection_id = persist(database)
+        typer.echo(f"Recorded locally as inspection {inspection_id} in {database.path}")
+
+    raise typer.Exit(EXIT_FOUND if found else EXIT_UNAVAILABLE)
+
+
+@app.command()
 def diagnostics(
     export: Annotated[
         Path | None, typer.Option("--export", help="Write the transaction log to this file.")
