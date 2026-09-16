@@ -390,6 +390,8 @@ class MainWindow(QMainWindow):
     def _clear_counters(self) -> None:
         while self.counters_layout.count():
             item = self.counters_layout.takeAt(0)
+            if item is None:
+                continue
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
